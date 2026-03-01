@@ -1,0 +1,24 @@
+{
+  "name": "@chitty/chittyproof",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/lib/chittyproof-v2-canonical.js"
+    },
+    "./verify-ecdsa": {
+      "import": "./src/lib/chittyproof-verify-ecdsa.js"
+    },
+    "./schema": {
+      "import": "./etc/authority/schema/chittyproof-v2-fact-bundle.schema.json",
+      "default": "./etc/authority/schema/chittyproof-v2-fact-bundle.schema.json"
+    }
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.16"
+  }
+}

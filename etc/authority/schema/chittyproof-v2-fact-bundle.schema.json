@@ -1,0 +1,480 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "chittycanon://schemas/chittyproof/v2/fact-bundle",
+  "title": "ChittyProof v2 Fact Bundle (Strict)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "proof_version",
+    "ruleset_id",
+    "weights_hash",
+    "proof_id",
+    "fact",
+    "ledger",
+    "chain",
+    "score",
+    "pillars",
+    "generated_at"
+  ],
+  "properties": {
+    "proof_version": {
+      "const": "2.0.0"
+    },
+    "ruleset_id": {
+      "const": "chittyproof-v2-fact-default"
+    },
+    "weights_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "proof_id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 200
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fact_id",
+        "fact_text",
+        "created_at",
+        "status",
+        "primary_evidence_id",
+        "fact_hash",
+        "evidence_hash_at_mint",
+        "corroborating_hashes"
+      ],
+      "properties": {
+        "fact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fact_text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "sealed"
+        },
+        "primary_evidence_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fact_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "evidence_hash_at_mint": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "corroborating_hashes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidence_id",
+              "hash",
+              "validated_at"
+            ],
+            "properties": {
+              "evidence_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "validated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "dispute": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dispute_id",
+            "status",
+            "reason",
+            "opened_at"
+          ],
+          "properties": {
+            "dispute_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "enum": [
+                "open",
+                "resolved_for_fact",
+                "resolved_against_fact"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "opened_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "resolved_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "ledger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ledger_fact_uri",
+        "sealed_by",
+        "sealed_at"
+      ],
+      "properties": {
+        "ledger_fact_uri": {
+          "type": "string",
+          "minLength": 10
+        },
+        "sealed_by": {
+          "type": "string",
+          "minLength": 5
+        },
+        "sealed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "seal_reason": {
+          "type": "string"
+        }
+      }
+    },
+    "chain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchored",
+        "anchor_status",
+        "blockchain_record_id"
+      ],
+      "properties": {
+        "anchored": {
+          "type": "boolean"
+        },
+        "anchor_status": {
+          "enum": [
+            "VERIFIED",
+            "PENDING",
+            "MISSING"
+          ]
+        },
+        "blockchain_record_id": {
+          "type": "string",
+          "minLength": 8
+        },
+        "receipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "type": {
+              "const": "chittychain"
+            },
+            "payload": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alg",
+        "kid",
+        "sig",
+        "signed_fields_hash"
+      ],
+      "properties": {
+        "alg": {
+          "const": "ECDSA-P256"
+        },
+        "kid": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200
+        },
+        "sig": {
+          "type": "string",
+          "minLength": 16
+        },
+        "sig_format": {
+          "type": "string",
+          "enum": [
+            "raw_rs_64",
+            "der"
+          ]
+        },
+        "signed_fields_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "score": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "score_11",
+        "score_100",
+        "coverage",
+        "confidence",
+        "score_adj_11",
+        "grade",
+        "status",
+        "exceptions"
+      ],
+      "properties": {
+        "score_11": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "score_100": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "score_adj_11": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "grade": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "U"
+          ]
+        },
+        "status": {
+          "enum": [
+            "VERIFIED",
+            "STRONG",
+            "MODERATE",
+            "WEAK",
+            "INSUFFICIENT"
+          ]
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "pillars": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hash_integrity",
+        "evidence_snapshot",
+        "corroboration",
+        "authority",
+        "seal_audit",
+        "lifecycle_validity",
+        "chronology",
+        "chain_anchor",
+        "signature_validity",
+        "dispute_posture",
+        "bundle_completeness"
+      ],
+      "properties": {
+        "hash_integrity": {
+          "$ref": "#/$defs/pillar"
+        },
+        "evidence_snapshot": {
+          "$ref": "#/$defs/pillar"
+        },
+        "corroboration": {
+          "$ref": "#/$defs/pillar"
+        },
+        "authority": {
+          "$ref": "#/$defs/pillar"
+        },
+        "seal_audit": {
+          "$ref": "#/$defs/pillar"
+        },
+        "lifecycle_validity": {
+          "$ref": "#/$defs/pillar"
+        },
+        "chronology": {
+          "$ref": "#/$defs/pillar"
+        },
+        "chain_anchor": {
+          "$ref": "#/$defs/pillar"
+        },
+        "signature_validity": {
+          "$ref": "#/$defs/pillar"
+        },
+        "dispute_posture": {
+          "$ref": "#/$defs/pillar"
+        },
+        "bundle_completeness": {
+          "$ref": "#/$defs/pillar"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "verification_url": {
+          "type": "string"
+        },
+        "export_pdf_r2_key": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "pillar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw",
+        "weight",
+        "score",
+        "status",
+        "confidence",
+        "evidence"
+      ],
+      "properties": {
+        "raw": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "status": {
+          "enum": [
+            "pass",
+            "partial",
+            "fail",
+            "unknown"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence_item"
+          }
+        }
+      }
+    },
+    "evidence_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "ok",
+        "code",
+        "message",
+        "details",
+        "source",
+        "observed_at"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "hash_check",
+            "timestamp_check",
+            "trust_check",
+            "anchor_check",
+            "policy_check",
+            "state_check",
+            "corroboration_check",
+            "signature_check"
+          ]
+        },
+        "ok": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "details": {
+          "type": "object"
+        },
+        "source": {
+          "enum": [
+            "ledger",
+            "proof",
+            "trust",
+            "chain"
+          ]
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}
