@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "main": "src/worker.js",
   "exports": {
     ".": {
       "import": "./src/lib/chittyproof-v2-canonical.js"
@@ -16,9 +17,15 @@
     }
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
   "devDependencies": {
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "wrangler": "^4.69.0"
+  },
+  "dependencies": {
+    "hono": "^4.12.3"
   }
 }
