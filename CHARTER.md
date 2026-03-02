@@ -22,7 +22,7 @@ category: infrastructure
 - **Tier**: 0 (Trust Anchors)
 - **Organization**: CHITTYOS
 - **Domain**: proof.chitty.cc
-- **Artifact Type**: Library (consumed by services, not deployed standalone)
+- **Artifact Type**: Library + Service (dual-export at proof.chitty.cc)
 
 ## Mission
 
@@ -38,6 +38,7 @@ Provide deterministic, court-grade cryptographic integrity primitives for the Ch
 - JWKS key resolution with KV caching (kid-based lookup via ChittyCert)
 - Defining the authoritative FACT v2 bundle JSON Schema
 - Providing `normalizeBundle` / `canonicalSignedPayload` / `verifyBundle` / `verifyECDSA` exports
+- Serving HTTP verification endpoints at `proof.chitty.cc` for ecosystem consumers
 
 ### IS NOT Responsible For
 - Signing bundles (signing authority lives in the minting service)
@@ -52,12 +53,16 @@ Provide deterministic, court-grade cryptographic integrity primitives for the Ch
 | Type | Service | Purpose |
 |------|---------|---------|
 | Upstream | ChittyCert | JWKS endpoint for public key resolution |
+| Upstream | ChittyAuth | Shared-secret Bearer token validation |
 | Runtime | Web Crypto API | SHA-256 digest, ECDSA verify, key import |
+| Runtime | Hono | HTTP framework for Cloudflare Workers |
 | Optional | Cloudflare KV | JWKS key caching (`PROOF_KEY_CACHE` binding) |
+| Downstream | ChittyTrack | Automatic log/trace aggregation (tail_consumers) |
+| Downstream | ChittyBeacon | Health monitoring (probes /health) |
 
 ## API Contract
 
-ChittyProof is a library — it exports functions, not HTTP endpoints.
+ChittyProof is both a library (SDK exports) and a deployed service (HTTP endpoints at proof.chitty.cc).
 
 ### Exports (`lib/chittyproof-v2-canonical.js`)
 | Export | Signature | Purpose |
@@ -80,6 +85,16 @@ ChittyProof is a library — it exports functions, not HTTP endpoints.
 | `getPublicKeyByKid` | `(kid, env, opts?) => Promise<CryptoKey>` | KV-cached JWKS key resolution |
 | `verifyECDSA` | `(bundle, env, opts?) => Promise<{ok, reason, ...}>` | Full ECDSA signature verification |
 
+### HTTP Endpoints (proof.chitty.cc)
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| GET | `/health` | None | Health probe |
+| GET | `/api/v1/status` | None | Service metadata |
+| POST | `/api/v1/verify` | Bearer | Hash integrity + ECDSA verification |
+| POST | `/api/v1/canonicalize` | Bearer | Deterministic JSON canonicalization |
+| POST | `/api/v1/hash` | Bearer | SHA-256 of canonical signed payload |
+| POST | `/api/v1/validate` | Bearer | FACT v2 bundle schema validation |
+
 ### Schema
 - `etc/authority/schema/chittyproof-v2-fact-bundle.schema.json`
 - `$id`: `chittycanon://schemas/chittyproof/v2/fact-bundle`
@@ -98,7 +113,7 @@ ChittyProof is a library — it exports functions, not HTTP endpoints.
 - [x] CHARTER.md present
 - [x] CHITTY.md present
 - [x] CLAUDE.md present
-- [x] Tests passing (10/10 vitest)
+- [x] Tests passing (32/32 vitest)
 - [x] JSON Schema with canonical $id
 - [x] Canonical frontmatter with tech domain
 - [x] Package exports map defined
