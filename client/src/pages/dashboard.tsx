@@ -1,73 +1,63 @@
-import { useState } from "react";
 import { Link } from "wouter";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  FileText, 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
-  Plus, 
-  MoreHorizontal,
-  ArrowUpRight
+  ShieldCheck, 
+  Database, 
+  KeyRound, 
+  Activity,
+  ArrowUpRight,
+  Hash,
+  CheckCircle2,
+  AlertTriangle
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 // Mock Data
 const stats = [
-  { name: 'Total Documents', value: '142', icon: FileText, change: '+12%', changeType: 'positive' },
-  { name: 'Pending Review', value: '8', icon: Clock, change: 'Needs action', changeType: 'neutral' },
-  { name: 'Approved (30d)', value: '64', icon: CheckCircle2, change: '+4.5%', changeType: 'positive' },
-  { name: 'Rejected (30d)', value: '3', icon: XCircle, change: '-2%', changeType: 'positive' },
+  { name: 'Payloads Canonicalized', value: '1.24M', icon: Database, change: '+12k today', changeType: 'positive' },
+  { name: 'Signatures Verified', value: '984K', icon: ShieldCheck, change: '99.9% Success', changeType: 'positive' },
+  { name: 'Active JWKS Cached', value: '42', icon: KeyRound, change: 'Refreshed 2m ago', changeType: 'neutral' },
+  { name: 'Current Epsilon Guard', value: '0.00001', icon: Activity, change: 'Half-up rounding active', changeType: 'neutral' },
 ];
 
-const recentDocuments = [
-  { id: 1, title: 'Q3 Marketing Campaign Assets.pdf', project: 'Brand Refresh 2024', status: 'pending', date: '2 hours ago', owner: 'Alice Smith' },
-  { id: 2, title: 'Website Homepage Copy_v3.docx', project: 'Website Redesign', status: 'approved', date: 'Yesterday', owner: 'Bob Jones' },
-  { id: 3, title: 'Social Media Banners.zip', project: 'Social Strategy', status: 'changes_requested', date: '2 days ago', owner: 'Charlie Brown' },
-  { id: 4, title: 'Legal Terms and Conditions.pdf', project: 'Compliance Updates', status: 'pending', date: '3 days ago', owner: 'Diana Prince' },
-  { id: 5, title: 'Product UI Mockups.fig', project: 'App v2.0', status: 'approved', date: '4 days ago', owner: 'Evan Wright' },
+const recentBundles = [
+  { id: 'fact_8f72...a1b2', hash: 'sha256:4a1d8c...', status: 'verified', timestamp: 'Just now', type: 'Score Fact' },
+  { id: 'fact_9c34...d5e6', hash: 'sha256:7b2e9f...', status: 'verified', timestamp: '2 mins ago', type: 'Identity Proof' },
+  { id: 'fact_2a1b...c3d4', hash: 'sha256:1c4f5a...', status: 'failed', timestamp: '15 mins ago', type: 'Score Fact', error: 'Invalid ECDSA' },
+  { id: 'fact_5e6f...7a8b', hash: 'sha256:9d3e2c...', status: 'verified', timestamp: '1 hour ago', type: 'System Audit' },
+  { id: 'fact_1b2c...3d4e', hash: 'sha256:8f1a2b...', status: 'verified', timestamp: '2 hours ago', type: 'Score Fact' },
 ];
 
 const getStatusBadge = (status: string) => {
   switch (status) {
-    case 'pending':
-      return <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100/80 border-amber-200">Pending Review</Badge>;
-    case 'approved':
-      return <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100/80 border-emerald-200">Approved</Badge>;
-    case 'changes_requested':
-      return <Badge variant="secondary" className="bg-rose-100 text-rose-800 hover:bg-rose-100/80 border-rose-200">Changes Requested</Badge>;
+    case 'verified':
+      return <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 font-mono text-[10px] uppercase">Verified</Badge>;
+    case 'failed':
+      return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30 font-mono text-[10px] uppercase">Failed</Badge>;
     default:
-      return <Badge variant="outline">Unknown</Badge>;
+      return <Badge variant="outline" className="font-mono text-[10px] uppercase">Pending</Badge>;
   }
 };
 
 export default function Dashboard() {
   return (
     <AppLayout>
-      <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+      <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-[90rem] mx-auto space-y-8">
         
         {/* Header */}
         <div className="sm:flex sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Overview of your document proofs and approvals.
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Integrity Hub</h1>
+            <p className="mt-1 text-sm text-muted-foreground font-mono">
+              Tier 0 Trust Anchor • v1.0.0 (Strict FACT v2)
             </p>
           </div>
           <div className="mt-4 sm:mt-0 flex gap-3">
-            <Button variant="outline">View Reports</Button>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              New Proof
+            <Button variant="outline" className="border-border bg-card hover:bg-accent font-mono text-xs">
+              <Hash className="mr-2 h-3.5 w-3.5" />
+              Manual Verify
             </Button>
           </div>
         </div>
@@ -75,19 +65,19 @@ export default function Dashboard() {
         {/* Stats */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat) => (
-            <Card key={stat.name} className="shadow-sm border-border/50">
-              <CardContent className="p-6">
+            <Card key={stat.name} className="bg-card/50 backdrop-blur border-border/50 shadow-none hover:border-primary/20 transition-colors">
+              <CardContent className="p-5">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium text-muted-foreground">{stat.name}</div>
-                  <div className="p-2 bg-primary/10 rounded-full">
+                  <div className="text-xs font-mono text-muted-foreground uppercase tracking-wider">{stat.name}</div>
+                  <div className="p-1.5 bg-primary/10 rounded border border-primary/20">
                     <stat.icon className="h-4 w-4 text-primary" />
                   </div>
                 </div>
                 <div className="mt-4 flex items-baseline gap-2">
-                  <div className="text-3xl font-semibold tracking-tight text-foreground">{stat.value}</div>
-                  <span className={`text-xs font-medium ${
-                    stat.changeType === 'positive' ? 'text-emerald-600' : 
-                    stat.changeType === 'negative' ? 'text-rose-600' : 'text-amber-600'
+                  <div className="text-2xl font-semibold tracking-tight text-foreground">{stat.value}</div>
+                  <span className={`text-[10px] font-mono ${
+                    stat.changeType === 'positive' ? 'text-primary' : 
+                    stat.changeType === 'negative' ? 'text-destructive' : 'text-muted-foreground'
                   }`}>
                     {stat.change}
                   </span>
@@ -98,66 +88,54 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Documents List */}
+          {/* Recent Verifications */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="shadow-sm border-border/50">
-              <CardHeader className="pb-4">
+            <Card className="bg-card/50 backdrop-blur border-border/50 shadow-none">
+              <CardHeader className="pb-4 border-b border-border/50">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-lg">Recent Documents</CardTitle>
-                    <CardDescription>Documents requiring your attention or recently updated.</CardDescription>
+                    <CardTitle className="text-base font-semibold">FACT v2 Processing Stream</CardTitle>
+                    <CardDescription className="font-mono text-xs mt-1">Live feed of cryptographic verifications.</CardDescription>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-primary" asChild>
-                    <Link href="/documents">View all <ArrowUpRight className="ml-1 h-4 w-4" /></Link>
+                  <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10 font-mono text-xs" asChild>
+                    <Link href="/bundles">View Full Log <ArrowUpRight className="ml-1 h-3.5 w-3.5" /></Link>
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
-                    <thead className="text-xs text-muted-foreground uppercase bg-muted/50 border-y border-border/50">
+                    <thead className="text-[10px] font-mono text-muted-foreground uppercase bg-muted/30 border-b border-border/50">
                       <tr>
-                        <th className="px-4 py-3 font-medium rounded-tl-md">Document</th>
-                        <th className="px-4 py-3 font-medium">Status</th>
-                        <th className="px-4 py-3 font-medium">Updated</th>
-                        <th className="px-4 py-3 font-medium rounded-tr-md text-right">Actions</th>
+                        <th className="px-5 py-3 font-medium">Bundle ID</th>
+                        <th className="px-5 py-3 font-medium">Canonical Hash (SHA-256)</th>
+                        <th className="px-5 py-3 font-medium">Type</th>
+                        <th className="px-5 py-3 font-medium">Status</th>
+                        <th className="px-5 py-3 font-medium text-right">Time</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-border/50">
-                      {recentDocuments.map((doc) => (
-                        <tr key={doc.id} className="hover:bg-muted/30 transition-colors group">
-                          <td className="px-4 py-4">
-                            <div className="flex flex-col">
-                              <span className="font-medium text-foreground">{doc.title}</span>
-                              <span className="text-xs text-muted-foreground">{doc.project} • {doc.owner}</span>
+                    <tbody className="divide-y divide-border/50 font-mono text-xs">
+                      {recentBundles.map((doc, i) => (
+                        <tr key={i} className="hover:bg-muted/30 transition-colors group cursor-pointer" onClick={() => window.location.href = `/payload/${doc.id}`}>
+                          <td className="px-5 py-3 text-foreground font-medium">
+                            {doc.id}
+                          </td>
+                          <td className="px-5 py-3 text-muted-foreground truncate max-w-[150px]">
+                            {doc.hash}
+                          </td>
+                          <td className="px-5 py-3 text-muted-foreground">
+                            {doc.type}
+                          </td>
+                          <td className="px-5 py-3">
+                            <div className="flex items-center gap-2">
+                              {getStatusBadge(doc.status)}
+                              {doc.error && <span className="text-[10px] text-destructive">{doc.error}</span>}
                             </div>
                           </td>
-                          <td className="px-4 py-4">
-                            {getStatusBadge(doc.status)}
-                          </td>
-                          <td className="px-4 py-4 text-muted-foreground">
-                            {doc.date}
-                          </td>
-                          <td className="px-4 py-4 text-right">
-                            <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Button variant="secondary" size="sm" asChild>
-                                <Link href={`/document/${doc.id}`}>Review</Link>
-                              </Button>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>View Details</DropdownMenuItem>
-                                  <DropdownMenuItem>Download</DropdownMenuItem>
-                                  <DropdownMenuItem>Share Link</DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
+                          <td className="px-5 py-3 text-muted-foreground text-right">
+                            {doc.timestamp}
                           </td>
                         </tr>
                       ))}
@@ -168,38 +146,48 @@ export default function Dashboard() {
             </Card>
           </div>
 
-          {/* Sidebar Area */}
+          {/* System Health / Status */}
           <div className="space-y-6">
-            <Card className="shadow-sm border-border/50">
-              <CardHeader>
-                <CardTitle className="text-lg">Action Required</CardTitle>
-                <CardDescription>Items waiting for your approval.</CardDescription>
+            <Card className="bg-card/50 backdrop-blur border-border/50 shadow-none">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-primary" /> System Health
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {[1, 2].map((i) => (
-                  <div key={i} className="p-4 rounded-lg border bg-card hover:border-primary/50 transition-colors cursor-pointer">
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">Design Review</Badge>
-                      <span className="text-xs text-muted-foreground">Today</span>
-                    </div>
-                    <h4 className="text-sm font-medium mb-1">Landing Page Hero Banner</h4>
-                    <p className="text-xs text-muted-foreground mb-3">Requested by Alice S. • 2 versions</p>
-                    <Button size="sm" className="w-full">Review Now</Button>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-mono">
+                    <span className="text-muted-foreground">Deterministic JSON Canon</span>
+                    <span className="text-primary flex items-center"><CheckCircle2 className="h-3 w-3 mr-1"/> OK</span>
                   </div>
-                ))}
+                  <div className="flex justify-between text-xs font-mono">
+                    <span className="text-muted-foreground">P-256 ECDSA Verifier</span>
+                    <span className="text-primary flex items-center"><CheckCircle2 className="h-3 w-3 mr-1"/> OK</span>
+                  </div>
+                  <div className="flex justify-between text-xs font-mono">
+                    <span className="text-muted-foreground">JWKS Resolution Cache</span>
+                    <span className="text-primary flex items-center"><CheckCircle2 className="h-3 w-3 mr-1"/> OK</span>
+                  </div>
+                  <div className="flex justify-between text-xs font-mono pt-2 border-t border-border/50">
+                    <span className="text-muted-foreground">Orphaned Keys</span>
+                    <span className="text-amber-500 flex items-center"><AlertTriangle className="h-3 w-3 mr-1"/> 2 Detected</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm border-border/50 bg-gradient-to-br from-primary/5 to-transparent border-primary/10">
-              <CardContent className="p-6 text-center space-y-4">
-                <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Users className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Invite your team</h3>
-                  <p className="text-sm text-muted-foreground">Collaborate on proofs and streamline your approval process.</p>
-                </div>
-                <Button variant="outline" className="w-full border-primary/20 hover:bg-primary/5">Invite Members</Button>
+            <Card className="bg-primary/5 border-primary/20 shadow-none overflow-hidden relative">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <ShieldCheck className="h-24 w-24" />
+              </div>
+              <CardContent className="p-6 relative z-10 space-y-3">
+                <h3 className="font-semibold text-sm">ChittyProof v1.0.0 Active</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed font-mono">
+                  Tier 0 infrastructure is currently enforcing strict FACT v2 bundle schema constraints (11 required pillars, additionalProperties: false).
+                </p>
+                <Button variant="outline" size="sm" className="w-full bg-background border-primary/20 text-primary hover:bg-primary/10 mt-2 font-mono text-[10px] uppercase">
+                  View Architecture Docs
+                </Button>
               </CardContent>
             </Card>
           </div>
