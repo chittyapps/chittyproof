@@ -27,5 +27,6 @@
   },
   "dependencies": {
     "hono": "^4.12.3"
-  }
+  },
+  "description": "Evidence-grade document transformation and proof minting service"
 }
